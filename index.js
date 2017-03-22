@@ -5,23 +5,28 @@ class TicTacToe {
     this.moves = moves;
   }
 
-  checkGameEnd(player, row) {
+  checkGameEnd(player, row, col) {
     if(this.moves === 9) {
+      this.printBoard();
       console.log("\nIt's a DRAW !\n");
       process.exit();
     }
 
-    console.log(this.board[row], player);
     var rowWin = this.board[row].every((mark) => mark === player);
-    if(rowWin) {
-      console.log("\nPLAYER " +player+ " WON!\n");
+    var colWin = this.board.every((line) => line[col] === player);
+    var diagWin = (this.board[0][0] === player && this.board[1][1] === player
+                  && this.board[2][2] === player) ||
+                  (this.board[0][2] === player && this.board[1][1] === player
+                  && this.board[2][0] === player);
+
+    if(rowWin || colWin || diagWin) {
+      this.printBoard();
+      console.log("\n\x1b[44m\x1b[32mPLAYER " + player + " WON!\x1b[0m\n");
       process.exit();
     }
   }
 
   playTurn(player) {
-    console.log('MOVES', this.moves)
-
     // intialize board
     if(!this.board.length) {
       this.makeBoard();
@@ -32,9 +37,6 @@ class TicTacToe {
     process.stdout.write('*** \x1b[33m'+ player + '\x1b[0m' + " it's your turn!\n")
     process.stdout.write('*** Enter coordinates:');
     this.handleInput(player);
-
-    // check if game is done setWinner
-
     this.moves++;
   }
 
@@ -54,7 +56,7 @@ class TicTacToe {
     .then((input) => {
       this.board[input[0]][input[1]] = player;
       const nextRound = player === 'X'? 'O': 'X';
-      this.checkGameEnd(player, input[0]);
+      this.checkGameEnd(player, input[0], input[1]);
       this.playTurn(nextRound);
     })
     .catch((err) => {
