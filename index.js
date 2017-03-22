@@ -1,24 +1,3 @@
-
-// process.stdin.resume();
-// process.stdin.setEncoding('utf8');
-// var util = require('util');
-//
-// process.stdin.on('data', function (text) {
-//   console.log('received data:', util.inspect(text));
-//   if (text === 'quit\n') {
-//     done();
-//   }
-// });
-//
-// function done() {
-//   console.log('Now that process.stdin is paused, there is nothing more to do.');
-//   process.exit();
-// }
-
-
-const util = require('util');
-
-
 class TicTacToe {
   constructor(board = [], round = 'X', moves = 0) {
     this.board = board;
@@ -29,30 +8,35 @@ class TicTacToe {
 
   checkGameEnd() {
     if(this.moves === 9) {
-      return 'DONE';
+      console.log("\nIt's a DRAW !\n");
+      process.exit();
     }
   }
 
   playTurn(player) {
-    // check if game is done setWinner
-    if(this.moves === 3) {
-      return 'WINNER';
-    }
+    console.log('MOVES', this.moves)
+
     // intialize board
     if(!this.board.length) {
       this.makeBoard();
     }
     this.printBoard();
+
+    // check if game is done setWinner
+    if(this.moves === 9) {
+      console.log("\nIt's a DRAW !\n");
+      process.exit();
+    }
+
+    // setTurn
     process.stdout.write('*** \x1b[33m'+ player + '\x1b[0m' + " it's your turn!\n")
     process.stdout.write('*** Enter coordinates:');
-    this.handleInput(player)
+    this.handleInput(player);
+    this.moves++;
   }
 
 
-
-
   handleInput(player) {
-    process.stdin.resume();
     return new Promise((res, rej) => {
       process.stdin.on('data', (buffer) => {
         const input = buffer.toString().replace(/\s/g, '');
@@ -66,7 +50,6 @@ class TicTacToe {
     })
     .then((input) => {
       this.board[input[0]][input[1]] = player;
-      this.moves++;
       const nextRound = player === 'X'? 'O': 'X';
       this.playTurn(nextRound);
     })
